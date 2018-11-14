@@ -15,7 +15,7 @@ def on_receive_hand(message):
 def on_response(message):
     print('\nResponse: ' + message + '\n')
 
-    if message.lower().__contains__('create another nickname'):
+    if message.lower().__contains__('create another nickname') or message.lower().__contains__('already satisfied'):
         exit(-1)
 
 
