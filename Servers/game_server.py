@@ -6,6 +6,7 @@ from Game.board import Board
 
 app = Flask(__name__)
 socketIO = SocketIO(app)
+board = Board()
 
 connected_users = []
 admin = None
@@ -40,8 +41,10 @@ def connect_user(message):
 
 @socketIO.on('terminate/'+str(admin))
 def quit_game():
+    global board, thread_plays, thread_connections
     board.clear_round()
     thread_connections = None
+    thread_plays = None
     exit(0)
 
 
@@ -64,10 +67,11 @@ def do_plays(message):
 @socketIO.on('wait_connections')
 def wait_connections(message='^'):
     global connected_users
-    connected_users.append(message)
-    print('entrou em connections')
 
-    while len(connected_users) < 2 + 1:
+    connected_users.append(message)
+    board.add_user(message)
+
+    while len(connected_users) < 5 + 1:
         time.sleep(3)
         print('Waiting connections')
 
