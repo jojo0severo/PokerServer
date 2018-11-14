@@ -24,8 +24,10 @@ def connect_user(message):
 
     if message not in board.users:
         board.add_user(message)
+        board.remove_user('^')
+        connected_users.append(message)
 
-        if admin == None:
+        if admin is None:
             admin = board[message]
 
         emit('response', 'Connected motherfucker')
@@ -101,16 +103,24 @@ def wait_all_plays():
                                   '\nIn order to continue playing (you can still quit, pussy)')
 
 
-if __name__ == "__main__":
-    board = Board()
+def start_socket():
+    socketIO.run(app, host='0.0.0.0', port='5000')
 
+
+def start_server():
     thread_connections = threading.Thread(target=wait_connections)
+    thread_plays = threading.Thread(target=wait_all_plays)
+    thread_socket = threading.Thread(target=start_socket)
+
+    thread_socket.start()
+
+    time.sleep(1)
+
     thread_connections.start()
 
     time.sleep(1)
 
-    thread_plays = threading.Thread(target=wait_all_plays)
     thread_plays.start()
 
-    socketIO.run(app, host='0.0.0.0', port='5000')
+
 
