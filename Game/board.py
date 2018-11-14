@@ -56,7 +56,8 @@ class Board:
         return increase_bet, self.quit_players
 
     def remove_user(self, name):
-        del self.users[name]
+        if name in self.users:
+            del self.users[name]
 
     def clear_round(self):
         self.players_plays.clear()
