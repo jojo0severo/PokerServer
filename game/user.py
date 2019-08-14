@@ -23,3 +23,7 @@ class User:
         else:
             self.money = 0
             return False
+
+    def json(self):
+        return {'name': self.name, 'hand': self.cards, 'money': self.money,
+                'small_blind': self.small_blind, 'big_blind': self.big_blind}

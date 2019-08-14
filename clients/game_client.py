@@ -1,4 +1,5 @@
 import json
+import time
 import socketio
 
 
@@ -13,8 +14,9 @@ class Client:
         self.define_endpoints()
 
     def define_endpoints(self):
-        self.socket.on('game_started', self.play)
-        self.socket.on('play_response', self.result)
+        self.socket.on('game_started', self.show_info)
+        self.socket.on('round_finished', self.show_info)
+        self.socket.on('play', self.ask_play)
 
     def start(self, name):
         self.socket.emit('connect_user', data=json.dumps({'name': name}), callback=self.save_response)
@@ -25,23 +27,33 @@ class Client:
         if not self.response['result']:
             exit(self.response['message'])
 
-        else:
-            self.format_response()
+    def ask_play(self, _):
+        time.sleep(.2)
+        input('\n\nFaça sua jogada:\n')
+        print('\n')
+        self.socket.emit('make_play', data=json.dumps({'play': 'a', 'bet': 0}), callback=self.save_response)
 
-    def play(self, args):
-        input('Faça sua jogada:\n')
-        pass
+    def show_info(self, msg):
+        while self.response is None:
+            pass
 
-    def result(self, args):
-        pass
+        if not self.response['result']:
+            exit(self.response['message'])
+
+        msg = json.loads(msg)
+        print('Nome:', msg['user']['name'], '\n' + 'Dinheiro:',
+              msg['user']['money'], '\n' + msg['user']['hand'], '\n\n', 'Mesa:\n' + ''.join(msg['table']))
+
+        if msg['user']['small_blind']:
+            print('You are the small blind')
+
+        elif msg['user']['big_blind']:
+            print('You are the big blind')
+
+        self.response = None
 
     def save_response(self, resp):
         self.response = json.loads(resp)
-
-    def format_response(self):
-        print('Nome:', self.response['json']['name'])
-        print('Dinheiro:', self.response['json']['money'])
-        print(self.response['json']['hand'])
 
 
 if __name__ == '__main__':

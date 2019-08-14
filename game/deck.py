@@ -31,11 +31,7 @@ class Deck:
             if len(self.deck[value]) == 0:
                 del self.deck[value]
 
-        lines = []
-        for card in hand:
-            lines.append(self.get_card_image(card).split('\n'))
-
-        return self.hand_view_format(lines)
+        return hand
 
     @staticmethod
     def hand_view_format(lines, amount_by_line=10):
